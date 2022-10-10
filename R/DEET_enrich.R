@@ -369,7 +369,7 @@ DEET_enrich <- function(DEG_list, DEET_dataset, ordered = FALSE, background = NU
                                                  cutoff = 0.05)
     AP_DEET_TF_sig <- AP_DEET_TF[ AP_DEET_TF$adjusted.p.val < 0.05, ]
     
-    if(nrow(AP_DEET_BP_sig) > 0) {
+    if(nrow(AP_DEET_TF_sig) > 0) {
       
       AP_DEET_TF_sig$adjusted.p.val[AP_DEET_TF_sig$adjusted.p.val == 0] <- min(AP_DEET_TF_sig$adjusted.p.val[AP_DEET_TF_sig$adjusted.p.val != 0])
     }
@@ -430,6 +430,9 @@ DEET_enrich <- function(DEG_list, DEET_dataset, ordered = FALSE, background = NU
 
       rownames(cor_results_sig) <- cor_results_sig$DEET.ID
       names(cor_mats_sig) <- cor_results_sig$DEET.ID
+    } else {
+      cor_results_sig <- "No enriched comparisons had more than two DEGs, cannot compute correlations."
+      warning(cor_results_sig) 
     }
   }
 
@@ -515,8 +518,8 @@ DEET_enrich <- function(DEG_list, DEET_dataset, ordered = FALSE, background = NU
         DE_correlations <- "No variance in coefs. Cannot proceed with correlation."
 
       } else {
-        warning("Correlations were not run despite there being variance in coefficients. Check input.")
-        DE_correlations <- "Correlations were not run despite there being variance in coefficients. Check input."
+        warning("Correlations were not run despite there being variance in coefficients. Check input/output. Likely possibility is that there were enriched studies but none had more than two overlapping DEGs.")
+        DE_correlations <- "Correlations were not run despite there being variance in coefficients. Check input/output. Likely possibility is that there were enriched studies but none had more than two overlapping DEGs."
       }
     }
 

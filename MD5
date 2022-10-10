@@ -1,7 +1,7 @@
-72b92cb46975a39afa4dfcbcaf5db30b *DESCRIPTION
+edeb658b78361b9dbefbad10d5c54fe8 *DESCRIPTION
 413c99e983472191a2adcf0f53dd9cbc *NAMESPACE
 a4da34544409e9a172d195d63e10f0b4 *R/DEET_data_download.R
-eab75bc9f8eb630f11cb59821479e48b *R/DEET_enrich.R
+ddc54751e1b2dbc083a65506dc571bb7 *R/DEET_enrich.R
 1264b1ddab04e11f912f6590d29cbfc8 *R/DEET_enrichment_plot.R
 7c22a388801c5b745b9caca03c0959db *R/DEET_example_data.R
 d258e56cbd0a96fa3a3f5df14952fc7f *R/DEET_feature_extract.R
@@ -10,7 +10,7 @@ de35c783e69241b4b85a204f1c1a8589 *R/DEET_feature_extract_example_response.R
 2990d8d4a72b0662c4d630145509d59f *R/DEET_plot_correlation.R
 a8273a01d4d98f838a22fba47294ed2c *R/example_DEET_enrich_input.R
 eb8f5361fff84e05662f21355656f016 *R/proccess_and_plot_DEET_enrich.R
-f1f87371c40ca8da89abf2f97a1b8758 *README.md
+ab6f8ba7e1eeb9ba242c35de4ed10071 *README.md
 6ac8668375c90b88365b0a3f9c4b2591 *build/vignette.rds
 ac569bc3b7bbc47976a7124f34488cc7 *data/DEET_example_data.rda
 afb6a30ea58f06573961e32c1035874f *data/DEET_feature_extract_example_matrix.rda
@@ -18,7 +18,7 @@ afb6a30ea58f06573961e32c1035874f *data/DEET_feature_extract_example_matrix.rda
 91d8f778fe689a3f9c00130e96ce0aed *data/example_DEET_enrich_input.rda
 e35c34bae88c1674949e04202ef83231 *inst/doc/DEET_vignette.R
 0ff0dee399e307ca8cc9c78aa3065c99 *inst/doc/DEET_vignette.Rmd
-31480657a3ad613436287b1948a0b815 *inst/doc/DEET_vignette.html
+e62ae64947e9a09b113f7a9859f812f7 *inst/doc/DEET_vignette.html
 7018d03cfff557b0fdc4ac3724327b36 *man/DEET_data_download.Rd
 55e66453ddd744e5852de95cecdb302d *man/DEET_enrich.Rd
 2807eb9a7933ce9bd9aefefbd65e74c5 *man/DEET_enrichment_plot.Rd
