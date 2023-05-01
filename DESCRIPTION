@@ -1,6 +1,6 @@
 Package: DEET
 Title: Differential Expression Enrichment Tool
-Version: 1.0.8
+Version: 1.0.10
 Authors@R: 
   c(person(given = "Dustin",
            family = "Sokolowski",
@@ -39,8 +39,8 @@ License: GPL-3
 URL:
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
-Packaged: 2022-12-24 23:06:04 UTC; djsok
+RoxygenNote: 7.2.3
+Packaged: 2023-05-01 16:10:43 UTC; djsok
 Suggests: testthat, knitr, rmarkdown
 VignetteBuilder: knitr
 NeedsCompilation: no
@@ -52,4 +52,4 @@ Author: Dustin Sokolowski [aut, cre],
   Anna Goldenberg [aut],
   Michael Wilson [aut]
 Repository: CRAN
-Date/Publication: 2023-01-05 15:20:23 UTC
+Date/Publication: 2023-05-01 17:00:02 UTC

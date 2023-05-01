@@ -16,6 +16,10 @@
 #' vector of gene symbols that is ordered. Default value is FALSE.
 #' @param background Character vector of human gene symbols showing all
 #' possible genes. Default value is NULL.
+#' @param abs_cor Boolean value that forces log2FC's in DEET to be
+#' their absolute value. Use when the directionality of the coefficient 
+#' is unknown (or includes both up- down- directions). Default value
+#' is FALSE.
 #'
 #'
 #' @return Named list where each element contains 6 objects. Each object will
@@ -52,7 +56,7 @@
 #' @importFrom pbapply pblapply
 #' @importFrom stats cor.test p.adjust var
 #'
-DEET_enrich <- function(DEG_list, DEET_dataset, ordered = FALSE, background = NULL){
+DEET_enrich <- function(DEG_list, DEET_dataset, ordered = FALSE, background = NULL, abs_cor = FALSE){
 
 
   # Internal data loaded through sysdata.rda.
@@ -120,7 +124,13 @@ DEET_enrich <- function(DEG_list, DEET_dataset, ordered = FALSE, background = NU
     # Populate input fold-change
     mat[DEG_processed$gene_symbol, "input"] <- DEG_processed$coef
     # Populate DEET fold-change
-    mat[rownames(comp), "DEET"] <- comp$log2FoldChange
+    if(abs_cor) {
+      mat[rownames(comp), "DEET"] <- abs(comp$log2FoldChange)
+      
+    } else {
+      mat[rownames(comp), "DEET"] <- comp$log2FoldChange
+      
+    }
 
     col <- rep("grey", nrow(mat))
     col[(mat[,1] > 0 & mat[,2] > 0) | (mat[,1] < 0 & mat[,2] < 0) ] <- "purple"
@@ -429,11 +439,17 @@ DEET_enrich <- function(DEG_list, DEET_dataset, ordered = FALSE, background = NU
       cor_results_sig <- cor_results[cor_results$FDR_Pear < 0.1 |
                                        cor_results$FDR_Spear < 0.1, ]
 
-      cor_mats_sig <- cor_mats[cor_results$FDR_Pear < 0.1 |
-                                 cor_results$FDR_Spear < 0.1]
-
-      rownames(cor_results_sig) <- cor_results_sig$DEET.ID
-      names(cor_mats_sig) <- cor_results_sig$DEET.ID
+      cor_results_sig <- cor_results_sig[complete.cases(cor_results_sig),]
+      if(nrow(cor_results_sig) > 0) {
+        cor_mats_sig <- cor_mats[cor_results$FDR_Pear < 0.1 |
+                                   cor_results$FDR_Spear < 0.1]
+        
+        rownames(cor_results_sig) <- cor_results_sig$DEET.ID
+        names(cor_mats_sig) <- cor_results_sig$DEET.ID
+      } else {
+        cor_results_sig <- "No studies had any correlated DEGs."
+        warning(cor_results_sig) 
+      }
     } else {
       cor_results_sig <- "No enriched comparisons had more than two DEGs, cannot compute correlations."
       warning(cor_results_sig) 

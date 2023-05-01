@@ -12,92 +12,107 @@
 
 <meta name="author" content="Dustin Sokolowski" />
 
-<meta name="date" content="2022-12-24" />
+<meta name="date" content="2023-05-01" />
 
 <title>Differential Expression Enrichment Tool (DEET)</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {  }
+{ }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -106,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -316,33 +338,48 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Differential Expression Enrichment Tool (DEET)</h1>
+<h1 class="title toc-ignore">Differential Expression Enrichment Tool
+(DEET)</h1>
 <h4 class="author">Dustin Sokolowski</h4>
-<h4 class="date">2022-12-24</h4>
+<h4 class="date">2023-05-01</h4>
 
 
 <div id="TOC">
 <ul>
-<li><a href="#install-and-load-deet">Install and load DEET</a><ul>
-<li><a href="#installation">Installation</a></li>
+<li><a href="#install-and-load-deet" id="toc-install-and-load-deet">Install and load DEET</a>
+<ul>
+<li><a href="#installation" id="toc-installation">Installation</a></li>
 </ul></li>
-<li><a href="#downloading-files">Downloading files</a><ul>
-<li><a href="#structure-of-required-datatypes">Structure of required datatypes</a></li>
+<li><a href="#downloading-files" id="toc-downloading-files">Downloading
+files</a>
+<ul>
+<li><a href="#structure-of-required-datatypes" id="toc-structure-of-required-datatypes">Structure of required
+datatypes</a></li>
 </ul></li>
-<li><a href="#implementation-summary">Implementation summary</a></li>
-<li><a href="#breaking-down-each-core-function-within-deet">Breaking down each core function within DEET</a><ul>
-<li><a href="#deet_enrich-querying-your-own-list-again-the-degs-stored-within-deet.">DEET_enrich: querying your own list again the DEGs stored within DEET.</a></li>
-<li><a href="#deet_feature_extract">DEET_feature_extract</a></li>
-<li><a href="#plotting-the-outputs-of-deet_enrich.">Plotting the outputs of DEET_enrich.</a></li>
-<li><a href="#outputs-2">Outputs</a></li>
-<li><a href="#using-deet-gene-lists-with-other-studies-and-enriching-two-input-lists-simultaneously.">Using DEET gene lists with other studies and enriching two input lists simultaneously.</a></li>
+<li><a href="#implementation-summary" id="toc-implementation-summary">Implementation summary</a></li>
+<li><a href="#breaking-down-each-core-function-within-deet" id="toc-breaking-down-each-core-function-within-deet">Breaking down each
+core function within DEET</a>
+<ul>
+<li><a href="#deet_enrich-querying-your-own-list-again-the-degs-stored-within-deet." id="toc-deet_enrich-querying-your-own-list-again-the-degs-stored-within-deet.">DEET_enrich:
+querying your own list again the DEGs stored within DEET.</a></li>
+<li><a href="#deet_feature_extract" id="toc-deet_feature_extract">DEET_feature_extract</a></li>
+<li><a href="#plotting-the-outputs-of-deet_enrich." id="toc-plotting-the-outputs-of-deet_enrich.">Plotting the outputs of
+DEET_enrich.</a></li>
+<li><a href="#outputs-2" id="toc-outputs-2">Outputs</a></li>
+<li><a href="#using-deet-gene-lists-with-other-studies-and-enriching-two-input-lists-simultaneously." id="toc-using-deet-gene-lists-with-other-studies-and-enriching-two-input-lists-simultaneously.">Using
+DEET gene lists with other studies and enriching two input lists
+simultaneously.</a></li>
 </ul></li>
 </ul>
 </div>
 
 <div id="install-and-load-deet" class="section level2">
 <h2>Install and load DEET</h2>
-<p>DEET relies on the following packages. Since they are all CRAN in origin, they should download and install automatically with <code>devtools::install_github</code> or <code>utils::install.packages</code>. The required dependencies are listed below.</p>
+<p>DEET relies on the following packages. Since they are all CRAN in
+origin, they should download and install automatically with
+<code>devtools::install_github</code> or
+<code>utils::install.packages</code>. The required dependencies are
+listed below.</p>
 <ul>
 <li>ggplot2 - CRAN</li>
 <li>ActivePathways - CRAN</li>
@@ -359,128 +396,312 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <ol style="list-style-type: decimal">
 <li>Github (Development Version)</li>
 </ol>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;wilsonlabgroup/DEET&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;wilsonlabgroup/DEET&quot;</span>)</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>CRAN (Stable Release)</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co"># IN DEVELOPMENT</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># IN DEVELOPMENT</span></span></code></pre></div>
 </div>
 </div>
 <div id="downloading-files" class="section level2">
 <h2>Downloading files</h2>
-<p>All processed DEGs, metadata, and enriched pathways in formats compatible with this package as well as other methods such as gene set enrichment analysis are stored here: <a href="http://wilsonlab.org/public/DEET_data/" class="uri">http://wilsonlab.org/public/DEET_data/</a></p>
-<p>No functions within DEET automatically load data for the user, so the data either needs to be downloaded directly from the ftp, or using the downloader function.</p>
-<p>The <code>DEET_data_download</code> function, with possible inputs “ALL”, “metadata”, “enrich”, and “feature_extract” automatically downloads the data required to run <code>DEET_enrich</code> and/or <code>DEET_feature_extract</code>.</p>
+<p>All processed DEGs, metadata, and enriched pathways in formats
+compatible with this package as well as other methods such as gene set
+enrichment analysis are stored here: <a href="http://wilsonlab.org/public/DEET_data/" class="uri">http://wilsonlab.org/public/DEET_data/</a></p>
+<p>No functions within DEET automatically load data for the user, so the
+data either needs to be downloaded directly from the ftp, or using the
+downloader function.</p>
+<p>The <code>DEET_data_download</code> function, with possible inputs
+“ALL”, “metadata”, “enrich”, and “feature_extract” automatically
+downloads the data required to run <code>DEET_enrich</code> and/or
+<code>DEET_feature_extract</code>.</p>
 <p>We reccomended using:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">downloaded &lt;-<span class="st"> </span><span class="kw">DEET_data_download</span>(<span class="st">&quot;ALL&quot;</span>)</a>
-<a class="sourceLine" id="cb3-2" title="2">metadata &lt;-<span class="st"> </span>downloaded<span class="op">$</span>metadata</a>
-<a class="sourceLine" id="cb3-3" title="3">DEET_feature_extract_input &lt;-<span class="st"> </span>downloaded<span class="op">$</span>DEET_feature_extract</a>
-<a class="sourceLine" id="cb3-4" title="4">DEET_enrich_input &lt;-<span class="st"> </span>downloaded<span class="op">$</span>DEET_enrich</a></code></pre></div>
-<p>Here: <code>DEET_enrich_input</code> replaces <code>DEET_example_data</code> for <code>DEET_enrich()</code>. <code>DEET_feature_extract_input</code> replaces <code>DEET_feature_extract_example_matrix</code> for <code>DEET_feature_extract()</code> Lastly, <code>metadata</code> is not directly used in any of the function, but summarizes all of the pairwise comparisons using the following columns.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>downloaded <span class="ot">&lt;-</span> <span class="fu">DEET_data_download</span>(<span class="st">&quot;ALL&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> downloaded<span class="sc">$</span>metadata</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>DEET_feature_extract_input <span class="ot">&lt;-</span> downloaded<span class="sc">$</span>DEET_feature_extract</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>DEET_enrich_input <span class="ot">&lt;-</span> downloaded<span class="sc">$</span>DEET_enrich</span></code></pre></div>
+<p>Here: <code>DEET_enrich_input</code> replaces
+<code>DEET_example_data</code> for <code>DEET_enrich()</code>.
+<code>DEET_feature_extract_input</code> replaces
+<code>DEET_feature_extract_example_matrix</code> for
+<code>DEET_feature_extract()</code> Lastly, <code>metadata</code> is not
+directly used in any of the function, but summarizes all of the pairwise
+comparisons using the following columns.</p>
 <p>Once download, save these data and DEET can be used offline.</p>
 <div id="structure-of-required-datatypes" class="section level3">
 <h3>Structure of required datatypes</h3>
 <div id="metadata" class="section level4">
 <h4>metadata</h4>
-<p>A comparison - by - explanatory piece of data dataframe providing important details to contextualize each study. For every pairwise comparison, the study name, source (SRA, TCGA, GTEx and SRA-manual), description from the DRA compendium, the number of samples (total, up-condition, and down-condition), samples (total ,up-condition, down-condition), tissue (including tumour from TCGA), number of DEs (total, up-condition, down-condition), age (mean +- sd), sex, top 15 DEGs - up, top 15 DEGs - down, top 5 enriched pathways, and top 5 enriched TFs. PMID are also available for studies selected from SRA. Lastly, each pairwise comparison was given an overall category based on those decided in Crow et al., 2019.</p>
+<p>A comparison - by - explanatory piece of data dataframe providing
+important details to contextualize each study. For every pairwise
+comparison, the study name, source (SRA, TCGA, GTEx and SRA-manual),
+description from the DRA compendium, the number of samples (total,
+up-condition, and down-condition), samples (total ,up-condition,
+down-condition), tissue (including tumour from TCGA), number of DEs
+(total, up-condition, down-condition), age (mean +- sd), sex, top 15
+DEGs - up, top 15 DEGs - down, top 5 enriched pathways, and top 5
+enriched TFs. PMID are also available for studies selected from SRA.
+Lastly, each pairwise comparison was given an overall category based on
+those decided in Crow et al., 2019.</p>
 </div>
 <div id="deet_enrich_input" class="section level4">
 <h4>DEET_enrich_input</h4>
-<p>This is the meat and potatoes of the DEET dataset. Here, you can find all of the significant DE genes computed within DEET (padj &lt; 0.05), DEGs, pathways, and TFs sorted into *gmt files compatible with traditional pathway enrichment tools (e.g., GSEA, gprofiler etc.), respective metadata, and the pathway enrichment and TF enrichment files used to generate the internal pathway enrichments of <code>DEET_enrich</code>. A more specific breakdown of these objects are below:</p>
+<p>This is the meat and potatoes of the DEET dataset. Here, you can find
+all of the significant DE genes computed within DEET (padj &lt; 0.05),
+DEGs, pathways, and TFs sorted into *gmt files compatible with
+traditional pathway enrichment tools (e.g., GSEA, gprofiler etc.),
+respective metadata, and the pathway enrichment and TF enrichment files
+used to generate the internal pathway enrichments of
+<code>DEET_enrich</code>. A more specific breakdown of these objects are
+below:</p>
 <ul>
-<li>DEET_enrich_input: A named list of seven objects containing the data frames summarizing the DEGs from comparisons within DEET, GMT objects of comparisons within DEET for enrichment through ActivePathways, GMT objects for basic pathway and TF enrichment, and a dataframe for the metadata of each study.</li>
-<li>DEET_DE: A list of data frames containing the significant DE genes, mean expression, log2fold-change, and padj from DESeq (padj &lt; 0.05).</li>
-<li>DEET_gmt_BP: A list of class GMT, which is a list of studies where each study is populated by comparison id (internal DEET identifier), comparison name (interpretable comparison name), and a gene set. In this case the gene-set is the pathways that are enriched within that study.</li>
-<li>DEET_gmt_TF: A list of class GMT, which is a list of studies where each study is populated by comparison id (internal DEET identifier), comparison name (interpretable comparison name), and a gene set. In this case the gene-set is the TFs that are enriched within that study.</li>
-<li>DEET_gmt_DE: A list of class GMT, which is a list of studies where each study is populated by comparison id (internal DEET identifier), comparison name (interpretable comparison name), and a gene set. In this case the gene-set is the DEGs that are enriched within that study.</li>
-<li>gmt_BP: A list of class GMT, which is a curated human gene ontology gene sets from the Bader Lab <code>http://download.baderlab.org/EM_Genesets/</code>.</li>
-<li>gmt_TF: A list of class GMT, which is a curated human transcription factor gene sets from the Bader Lab <code>http://download.baderlab.org/EM_Genesets/</code>.</li>
-<li>DEET_metadata: the same as the <code>metadata</code> dataframe (see above).</li>
+<li>DEET_enrich_input: A named list of seven objects containing the data
+frames summarizing the DEGs from comparisons within DEET, GMT objects of
+comparisons within DEET for enrichment through ActivePathways, GMT
+objects for basic pathway and TF enrichment, and a dataframe for the
+metadata of each study.</li>
+<li>DEET_DE: A list of data frames containing the significant DE genes,
+mean expression, log2fold-change, and padj from DESeq (padj &lt;
+0.05).</li>
+<li>DEET_gmt_BP: A list of class GMT, which is a list of studies where
+each study is populated by comparison id (internal DEET identifier),
+comparison name (interpretable comparison name), and a gene set. In this
+case the gene-set is the pathways that are enriched within that
+study.</li>
+<li>DEET_gmt_TF: A list of class GMT, which is a list of studies where
+each study is populated by comparison id (internal DEET identifier),
+comparison name (interpretable comparison name), and a gene set. In this
+case the gene-set is the TFs that are enriched within that study.</li>
+<li>DEET_gmt_DE: A list of class GMT, which is a list of studies where
+each study is populated by comparison id (internal DEET identifier),
+comparison name (interpretable comparison name), and a gene set. In this
+case the gene-set is the DEGs that are enriched within that study.</li>
+<li>gmt_BP: A list of class GMT, which is a curated human gene ontology
+gene sets from the Bader Lab
+<code>http://download.baderlab.org/EM_Genesets/</code>.</li>
+<li>gmt_TF: A list of class GMT, which is a curated human transcription
+factor gene sets from the Bader Lab
+<code>http://download.baderlab.org/EM_Genesets/</code>.</li>
+<li>DEET_metadata: the same as the <code>metadata</code> dataframe (see
+above).</li>
 </ul>
 </div>
 <div id="deet_feature_extract_input" class="section level4">
 <h4>DEET_feature_extract_input</h4>
-<p>A gene by comparison matrix populated by the log2Fold-change of genes that are significantly DE in the comparison (padj &lt; 0.05). The file is the input to the <code>mat</code> variable in DEET_feature_extract.</p>
+<p>A gene by comparison matrix populated by the log2Fold-change of genes
+that are significantly DE in the comparison (padj &lt; 0.05). The file
+is the input to the <code>mat</code> variable in
+DEET_feature_extract.</p>
 </div>
 </div>
 </div>
 <div id="implementation-summary" class="section level2">
 <h2>Implementation summary</h2>
-<p>The primary function of the DEET R package is to allow users to query their own list of DEGs against the consistently computed DEGs within DEET by using the function <code>DEET_enrich()</code>. The optimal input into <code>DEET_enrich()</code> is a data frame of genes (human gene symbols) with an associated p-value and coefficient (e.g., Fold-change) in conjunction with a list of genes designating the statistical background. <code>DEET_enrich()</code> first identifies enriched biological pathways and TF targets using the *.gmt files used for all of the DEET comparisons (i.e., “Human_GO_AllPathways_with_GO_iea_June_01_2021_symbo.gmt” for pathways and “Human_TranscriptionFactors_MSigdb_June_01_2021_symbol.gmt” for TFs), allowing us to not only compare overlapping genes between the user-inputted genes and the DEGs in DEET but also overlapping pathways and TFs. All gene-set enrichment within the <code>DEET_enrich()</code> functions use ActivePathways with all detected genes as the background, Brown’s p-value fusion method, a false-discovery rate for p-value correction, and a cutoff of 0.05. Then, <code>DEET_enrich()</code> enriches the users’ inputted genes, pathways, and TF targets against the DEGs, pathways, and TF targets stored within DEET. Enrichment of the user’s inputted gene lists against the DE comparisons within DEET are also completed with ActivePathways, with a minimum geneset filter of 15 and a maximum of 10000. Then, <code>DEET_enrich()</code> computes the Spearman’s and Pearson’s correlation between the coefficients within the user’s imputed list of DEGs that overlap with the log2(Fold-change) of DEGs within enriched pairwise comparisons.P-values of these correlations are corrected with an FDR-adjustment. Together, DEET_enrich() returns significantly enriched studies based on overlapping DEGs, pathways, and TFs. Similarly, <code>DEET_enrich()</code> returns the traditional pathway and TF motif enrichment of the inputted gene list. All enrichment outputs are in the format of the output of ActivePathways (study, FDR-adjusted p-value, input length, DE comparison length, overlapping genes). <code>DEET_enrich()</code> also returns a dataframe of the Spearman’s and Pearson’s correlation (with associated FDR-adjusted p-values) between the inputted DE list with the DEGs found in DEET as well as the intersecting DEGs within those studies. Optionally, <code>DEET_enrich()</code> may be used with a generic gene list (i.e. without P-values or coefficients). If the inputted gene list is ordered, then the p-value is artificially generated as equation 1 and the coefficient is artificially generated as equation 2. We assume an inputted list in decreasing order of significance, so the FDR and coef in equations 1 and 2 are reversed. <code>DEET_enrich()</code> then runs normally but Pearson’s correlation between the inputted gene list and the DEGs within DEET are excluded. If the inputted gene list is unordered, then all of the p-values are set to 0.049 and both Spearman’s and Pearon’s correlations between the users inputted genes and the DEGs within DEET are excluded. If users do not provide a background set of genes, then we assume the background set is all genes detected within DEET.</p>
-<p>For a sorted list of genes without a p-value or coefficient: Note, this happens internally, you do not have to do it.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">DEG_list &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>, <span class="st">&quot;d&quot;</span>) <span class="co"># list of genes user inputs</span></a>
-<a class="sourceLine" id="cb4-2" title="2"></a>
-<a class="sourceLine" id="cb4-3" title="3">DEG_processed &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">gene_symbol =</span> DEG_list)</a>
-<a class="sourceLine" id="cb4-4" title="4"><span class="co"># DEG list is the list of genes that the user inputs</span></a>
-<a class="sourceLine" id="cb4-5" title="5"></a>
-<a class="sourceLine" id="cb4-6" title="6">      padj &lt;-<span class="st"> </span><span class="fl">0.049</span></a>
-<a class="sourceLine" id="cb4-7" title="7">      <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span><span class="kw">nrow</span>(DEG_processed)) {</a>
-<a class="sourceLine" id="cb4-8" title="8">        padj[i] &lt;-<span class="st"> </span>padj[i<span class="dv">-1</span>] <span class="op">*</span><span class="st"> </span><span class="fl">0.95</span></a>
-<a class="sourceLine" id="cb4-9" title="9">      }</a>
-<a class="sourceLine" id="cb4-10" title="10">      padj &lt;-<span class="st"> </span><span class="kw">rev</span>(padj)</a>
-<a class="sourceLine" id="cb4-11" title="11">      log2fc &lt;-<span class="st"> </span><span class="kw">rev</span>(<span class="kw">seq</span>(<span class="dv">1</span>, <span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="fl">0.1</span><span class="op">*</span>(<span class="kw">nrow</span>(DEG_processed) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>), <span class="fl">0.1</span>))</a>
-<a class="sourceLine" id="cb4-12" title="12"></a>
-<a class="sourceLine" id="cb4-13" title="13">      DEG_processed<span class="op">$</span>padj &lt;-<span class="st"> </span>padj</a>
-<a class="sourceLine" id="cb4-14" title="14">      DEG_processed<span class="op">$</span>coef &lt;-<span class="st"> </span>log2fc</a>
-<a class="sourceLine" id="cb4-15" title="15">      <span class="kw">colnames</span>(DEG_processed) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;gene_symbol&quot;</span>, <span class="st">&quot;padj&quot;</span>, <span class="st">&quot;coef&quot;</span>)</a></code></pre></div>
-<p>The DEET R package also contains plotting functions to summarize the most significant studies based on each enrichment test and correlation within <code>DEET_enrich()</code>. The <code>proccess_and_plot_DEET_enrich()</code> function plots barplots of the most enriched studies based on gene set enrichment (ActivePathways) of studies enriched based on overlapping DEGs, pathways, and TF targets. The <code>DEET_plot_correlation()</code> function generates scatterplots of the most enriched studies based on Spearman’s correlation analysis. All plots are generated using ggplot2, and the functions return the ggplot2 objects, allowing researchers to further modify and/or save the plots.</p>
-<p>Lastly, the DEET R package contains a function called <code>DEET_feature_extract()</code>, which allows researchers to identify genes that are associated with metadata. If the response variable are continuous (e.g., number of DEGs in study, Fold-change of TP53 etc.) then features are extracted by calculating the coefficients from a Gaussian family elastic net regression using the glmnet R package, as well as Spearman’s correlation between every gene and the response variable. If the response variable is categorical (e.g., Source, Category etc.), then features are extracted by calculating the coefficients from a multinomial family elastic net regression, as well as an ANOVA between each category within the response variable. Lastly, in the response variable is ordinal (e.g., enriches for TNFa pathway, Cancer study yes/no etc.), then features are extracted using a binomial family elastic net regression, as well as a Wilcoxon’s test between the two categories within the response variable.</p>
+<p>The primary function of the DEET R package is to allow users to query
+their own list of DEGs against the consistently computed DEGs within
+DEET by using the function <code>DEET_enrich()</code>. The optimal input
+into <code>DEET_enrich()</code> is a data frame of genes (human gene
+symbols) with an associated p-value and coefficient (e.g., Fold-change)
+in conjunction with a list of genes designating the statistical
+background. <code>DEET_enrich()</code> first identifies enriched
+biological pathways and TF targets using the *.gmt files used for all of
+the DEET comparisons (i.e.,
+“Human_GO_AllPathways_with_GO_iea_June_01_2021_symbo.gmt” for pathways
+and “Human_TranscriptionFactors_MSigdb_June_01_2021_symbol.gmt” for
+TFs), allowing us to not only compare overlapping genes between the
+user-inputted genes and the DEGs in DEET but also overlapping pathways
+and TFs. All gene-set enrichment within the <code>DEET_enrich()</code>
+functions use ActivePathways with all detected genes as the background,
+Brown’s p-value fusion method, a false-discovery rate for p-value
+correction, and a cutoff of 0.05. Then, <code>DEET_enrich()</code>
+enriches the users’ inputted genes, pathways, and TF targets against the
+DEGs, pathways, and TF targets stored within DEET. Enrichment of the
+user’s inputted gene lists against the DE comparisons within DEET are
+also completed with ActivePathways, with a minimum geneset filter of 15
+and a maximum of 10000. Then, <code>DEET_enrich()</code> computes the
+Spearman’s and Pearson’s correlation between the coefficients within the
+user’s imputed list of DEGs that overlap with the log2(Fold-change) of
+DEGs within enriched pairwise comparisons.P-values of these correlations
+are corrected with an FDR-adjustment. Together, DEET_enrich() returns
+significantly enriched studies based on overlapping DEGs, pathways, and
+TFs. Similarly, <code>DEET_enrich()</code> returns the traditional
+pathway and TF motif enrichment of the inputted gene list. All
+enrichment outputs are in the format of the output of ActivePathways
+(study, FDR-adjusted p-value, input length, DE comparison length,
+overlapping genes). <code>DEET_enrich()</code> also returns a dataframe
+of the Spearman’s and Pearson’s correlation (with associated
+FDR-adjusted p-values) between the inputted DE list with the DEGs found
+in DEET as well as the intersecting DEGs within those studies.
+Optionally, <code>DEET_enrich()</code> may be used with a generic gene
+list (i.e. without P-values or coefficients). If the inputted gene list
+is ordered, then the p-value is artificially generated as equation 1 and
+the coefficient is artificially generated as equation 2. We assume an
+inputted list in decreasing order of significance, so the FDR and coef
+in equations 1 and 2 are reversed. <code>DEET_enrich()</code> then runs
+normally but Pearson’s correlation between the inputted gene list and
+the DEGs within DEET are excluded. If the inputted gene list is
+unordered, then all of the p-values are set to 0.049 and both Spearman’s
+and Pearon’s correlations between the users inputted genes and the DEGs
+within DEET are excluded. If users do not provide a background set of
+genes, then we assume the background set is all genes detected within
+DEET.</p>
+<p>For a sorted list of genes without a p-value or coefficient: Note,
+this happens internally, you do not have to do it.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>DEG_list <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="st">&quot;c&quot;</span>, <span class="st">&quot;d&quot;</span>) <span class="co"># list of genes user inputs</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>DEG_processed <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">gene_symbol =</span> DEG_list)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># DEG list is the list of genes that the user inputs</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      padj <span class="ot">&lt;-</span> <span class="fl">0.049</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="fu">nrow</span>(DEG_processed)) {</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        padj[i] <span class="ot">&lt;-</span> padj[i<span class="dv">-1</span>] <span class="sc">*</span> <span class="fl">0.95</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>      padj <span class="ot">&lt;-</span> <span class="fu">rev</span>(padj)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>      log2fc <span class="ot">&lt;-</span> <span class="fu">rev</span>(<span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">1</span> <span class="sc">+</span> <span class="fl">0.1</span><span class="sc">*</span>(<span class="fu">nrow</span>(DEG_processed) <span class="sc">-</span> <span class="dv">1</span>), <span class="fl">0.1</span>))</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>      DEG_processed<span class="sc">$</span>padj <span class="ot">&lt;-</span> padj</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      DEG_processed<span class="sc">$</span>coef <span class="ot">&lt;-</span> log2fc</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">colnames</span>(DEG_processed) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;gene_symbol&quot;</span>, <span class="st">&quot;padj&quot;</span>, <span class="st">&quot;coef&quot;</span>)</span></code></pre></div>
+<p>The DEET R package also contains plotting functions to summarize the
+most significant studies based on each enrichment test and correlation
+within <code>DEET_enrich()</code>. The
+<code>proccess_and_plot_DEET_enrich()</code> function plots barplots of
+the most enriched studies based on gene set enrichment (ActivePathways)
+of studies enriched based on overlapping DEGs, pathways, and TF targets.
+The <code>DEET_plot_correlation()</code> function generates scatterplots
+of the most enriched studies based on Spearman’s correlation analysis.
+All plots are generated using ggplot2, and the functions return the
+ggplot2 objects, allowing researchers to further modify and/or save the
+plots.</p>
+<p>Lastly, the DEET R package contains a function called
+<code>DEET_feature_extract()</code>, which allows researchers to
+identify genes that are associated with metadata. If the response
+variable are continuous (e.g., number of DEGs in study, Fold-change of
+TP53 etc.) then features are extracted by calculating the coefficients
+from a Gaussian family elastic net regression using the glmnet R
+package, as well as Spearman’s correlation between every gene and the
+response variable. If the response variable is categorical (e.g.,
+Source, Category etc.), then features are extracted by calculating the
+coefficients from a multinomial family elastic net regression, as well
+as an ANOVA between each category within the response variable. Lastly,
+in the response variable is ordinal (e.g., enriches for TNFa pathway,
+Cancer study yes/no etc.), then features are extracted using a binomial
+family elastic net regression, as well as a Wilcoxon’s test between the
+two categories within the response variable.</p>
 </div>
 <div id="breaking-down-each-core-function-within-deet" class="section level2">
 <h2>Breaking down each core function within DEET</h2>
 <div id="deet_enrich-querying-your-own-list-again-the-degs-stored-within-deet." class="section level3">
-<h3>DEET_enrich: querying your own list again the DEGs stored within DEET.</h3>
+<h3>DEET_enrich: querying your own list again the DEGs stored within
+DEET.</h3>
 <div id="inputs" class="section level4">
 <h4>Inputs</h4>
 <ul>
-<li><p><code>DEET_enrich()</code> expects a list of human gene symbols as either a character vector or as a data frame with the columns <code>c(&quot;gene_symbol&quot;, &quot;padj&quot;, &quot;coef&quot;). If you are inputted DEGs, the log2Fold-change is the most appropriate coefficient, but I left this general for other inputted data types (e.g., effect size from GWAS). The</code>example_DEET_enrich_input<code>has the structure required for a gene list with p-values and coefficients. An example of the unordered list is</code>example_DEET_enrich_input$gene_symbol`.</p></li>
-<li><p>DEET_dataset should either be the example file in <code>DEET_example_data</code> or <code>DEET_enrich_input</code> downloaded by the downloader function or manually from the FTP. other options will likely cause the tool to crash.</p></li>
-<li><p>ordered: This parameter only applies when the <code>DEG_list</code> variable is a character vector (not a dataframe). It determins if the inputted list is ordered or not.</p></li>
-<li><p>background: a character vector of genes within the universe. For example, if your input is a list of DEGs in RNA-seq, then “background” should be all of your detected genes. Like in traditional pathway enrichment, not seeting a background may bias the enriched studies by tissue and/or cell-type as more highly expressed genes have more power to be detected as DE.</p></li>
+<li><p><code>DEET_enrich()</code> expects a list of human gene symbols
+as either a character vector or as a data frame with the columns
+<code>c(&quot;gene_symbol&quot;, &quot;padj&quot;, &quot;coef&quot;). If you are inputted DEGs, the log2Fold-change is the most appropriate coefficient, but I left this general for other inputted data types (e.g., effect size from GWAS). The</code>example_DEET_enrich_input<code>has the structure required for a gene list with p-values and coefficients. An example of the unordered list is</code>example_DEET_enrich_input$gene_symbol`.</p></li>
+<li><p>DEET_dataset should either be the example file in
+<code>DEET_example_data</code> or <code>DEET_enrich_input</code>
+downloaded by the downloader function or manually from the FTP. other
+options will likely cause the tool to crash.</p></li>
+<li><p>ordered: This parameter only applies when the
+<code>DEG_list</code> variable is a character vector (not a dataframe).
+It determins if the inputted list is ordered or not.</p></li>
+<li><p>background: a character vector of genes within the universe. For
+example, if your input is a list of DEGs in RNA-seq, then “background”
+should be all of your detected genes. Like in traditional pathway
+enrichment, not seeting a background may bias the enriched studies by
+tissue and/or cell-type as more highly expressed genes have more power
+to be detected as DE.</p></li>
 </ul>
 </div>
 <div id="examples" class="section level4">
 <h4>Examples</h4>
 <div id="running-deet-with-an-datafame" class="section level5">
 <h5>Running DEET with an datafame</h5>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">data</span>(<span class="st">&quot;example_DEET_enrich_input&quot;</span>)</a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="kw">data</span>(<span class="st">&quot;DEET_example_data&quot;</span>)</a>
-<a class="sourceLine" id="cb5-3" title="3">DEET_out &lt;-<span class="st"> </span><span class="kw">DEET_enrich</span>(example_DEET_enrich_input, <span class="dt">DEET_dataset =</span> DEET_example_data)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;example_DEET_enrich_input&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;DEET_example_data&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>DEET_out <span class="ot">&lt;-</span> <span class="fu">DEET_enrich</span>(example_DEET_enrich_input, <span class="at">DEET_dataset =</span> DEET_example_data)</span></code></pre></div>
 </div>
 <div id="running-deet-with-an-ordered-gene-list" class="section level5">
 <h5>Running DEET with an ordered gene list</h5>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">data</span>(<span class="st">&quot;example_DEET_enrich_input&quot;</span>)</a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="kw">data</span>(<span class="st">&quot;DEET_example_data&quot;</span>)</a>
-<a class="sourceLine" id="cb6-3" title="3"></a>
-<a class="sourceLine" id="cb6-4" title="4">geneList &lt;-<span class="st"> </span>example_DEET_enrich_input<span class="op">$</span>gene_symbol</a>
-<a class="sourceLine" id="cb6-5" title="5">DEET_out &lt;-<span class="st"> </span><span class="kw">DEET_enrich</span>(geneList, <span class="dt">DEET_dataset =</span> DEET_example_data, <span class="dt">ordered =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;example_DEET_enrich_input&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;DEET_example_data&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>geneList <span class="ot">&lt;-</span> example_DEET_enrich_input<span class="sc">$</span>gene_symbol</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>DEET_out <span class="ot">&lt;-</span> <span class="fu">DEET_enrich</span>(geneList, <span class="at">DEET_dataset =</span> DEET_example_data, <span class="at">ordered =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </div>
 <div id="running-deet-with-an-unordered-gene-list" class="section level5">
 <h5>Running DEET with an unordered gene list</h5>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">data</span>(<span class="st">&quot;example_DEET_enrich_input&quot;</span>)</a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="kw">data</span>(<span class="st">&quot;DEET_example_data&quot;</span>)</a>
-<a class="sourceLine" id="cb7-3" title="3"></a>
-<a class="sourceLine" id="cb7-4" title="4">geneList &lt;-<span class="st"> </span>example_DEET_enrich_input<span class="op">$</span>gene_symbol</a>
-<a class="sourceLine" id="cb7-5" title="5">DEET_out &lt;-<span class="st"> </span><span class="kw">DEET_enrich</span>(geneList, <span class="dt">DEET_dataset =</span> DEET_example_data, <span class="dt">ordered =</span><span class="ot">FALSE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;example_DEET_enrich_input&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;DEET_example_data&quot;</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>geneList <span class="ot">&lt;-</span> example_DEET_enrich_input<span class="sc">$</span>gene_symbol</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>DEET_out <span class="ot">&lt;-</span> <span class="fu">DEET_enrich</span>(geneList, <span class="at">DEET_dataset =</span> DEET_example_data, <span class="at">ordered =</span><span class="cn">FALSE</span>)</span></code></pre></div>
 </div>
 <div id="differences-in-output-between-the-inputted-gene-list-types" class="section level5">
 <h5>Differences in output between the inputted gene list types</h5>
-<p>The output of these three comparisons will be comparable, however the correlation variable is of note when the input gene set is just a list of genes.</p>
-<p>When the gene set is ordered, a Spearman’s correlation is interpretable, as it is simply the rank-order of genes, however a Pearson’s correlation is not interpretable as we do not know the relative difference in coefficient size of your inputted genes</p>
-<p>If the gene list is unordered, correlation analysis is entirely uninterpretable and is not run. You are given this message: <code>Input gene list is considered UNORDERED: Correlation analysis will not be run and pathway enrichment will be unordered.</code></p>
-<p>Since it not run the output is <code>No variance in coefs. Cannot proceed with correlation.</code></p>
+<p>The output of these three comparisons will be comparable, however the
+correlation variable is of note when the input gene set is just a list
+of genes.</p>
+<p>When the gene set is ordered, a Spearman’s correlation is
+interpretable, as it is simply the rank-order of genes, however a
+Pearson’s correlation is not interpretable as we do not know the
+relative difference in coefficient size of your inputted genes</p>
+<p>If the gene list is unordered, correlation analysis is entirely
+uninterpretable and is not run. You are given this message:
+<code>Input gene list is considered UNORDERED: Correlation analysis will not be run and pathway enrichment will be unordered.</code></p>
+<p>Since it not run the output is
+<code>No variance in coefs. Cannot proceed with correlation.</code></p>
 </div>
 </div>
 <div id="outputs" class="section level4">
 <h4>Outputs</h4>
-<p>Named list where each element contains 6 objects. Each object will contain the results (enrichment or correlation) and corresponding metadata.</p>
+<p>Named list where each element contains 6 objects. Each object will
+contain the results (enrichment or correlation) and corresponding
+metadata.</p>
 <ul>
-<li>AP_INPUT_BP_output - Enriched BPs of input gene list. This is the output of ActivePathways. Namely, it is a data table giving the ontology ID, name, FDR-adjusted p-value, ontology size, and a character vector of overlapping genes.</li>
-<li>AP_INPUT_TF_output - Enriched TF of input gene list. The format is identical to <code>AP_INPUT_BP_output</code> but instead of enriched gene ontologies, there is the enriched TFs.</li>
-<li>AP_DEET_DE_output - Enriched pairwise comparisons within DEET based on overlap the researchers inputted gene list and DE genes. This object contains two elements, the first one is <code>results</code>, which is the same data.table as in <code>AP_INPUT_BP_output</code> but instead of pathways, we are enriching against DE comparisons found within DEET. The second is <code>metadata</code> which is a subset of the larger metadata dataframe that corresponds with the gene sets in <code>results</code>.</li>
-<li>AP_DEET_BP_output - Enriched pairwise comparisons within DEET based on the overlap of the pathways enriched by the inputted gene list and the pathways enriched from the pairwise comparisons withing DEET. The format is the same as <code>AP_DEET_DE_output</code> where pathway gene ontology term names are in the place of DE gene names.</li>
-<li>AP_DEET_TF_output - Enriched pairwise comparisons within DEET based on the overlap of the transcription factors enriched by the inputted gene list and the pathways enriched from the pairwise comparisons withing DEET. The format is the same as <code>AP_DEET_DE_output</code> where pathway gene transcription factor term names are in the place of DE gene names.</li>
-<li>DE_correlations - A list containing three objects. The first objects, <code>results</code> is a data frame where the rows are different pairwise comparisons and the columns are the ouput of the correlational analysis between overlapping genes. Columns are the DEET ID and DEET name, the pearson/spearman’s correlation coefficients, as well as their raw and FDR adjusted p-values. The <code>metadata</code> object are the subsetted rows from the metadata data frame that align with the studies containing significant correlations. Lastly, the <code>distributions</code> object is a list where each element is a diffierent significantly associated pairwise comparisons. Each element is populated by a dataframe where rows are genes significant in at least one study, columns are the coefficients from the input study and DEET, and colour designates whether the gene is DE in one study (grey), both studies in the same direction (purple) and both studies in the opposite direction (orange).</li>
+<li>AP_INPUT_BP_output - Enriched BPs of input gene list. This is the
+output of ActivePathways. Namely, it is a data table giving the ontology
+ID, name, FDR-adjusted p-value, ontology size, and a character vector of
+overlapping genes.</li>
+<li>AP_INPUT_TF_output - Enriched TF of input gene list. The format is
+identical to <code>AP_INPUT_BP_output</code> but instead of enriched
+gene ontologies, there is the enriched TFs.</li>
+<li>AP_DEET_DE_output - Enriched pairwise comparisons within DEET based
+on overlap the researchers inputted gene list and DE genes. This object
+contains two elements, the first one is <code>results</code>, which is
+the same data.table as in <code>AP_INPUT_BP_output</code> but instead of
+pathways, we are enriching against DE comparisons found within DEET. The
+second is <code>metadata</code> which is a subset of the larger metadata
+dataframe that corresponds with the gene sets in
+<code>results</code>.</li>
+<li>AP_DEET_BP_output - Enriched pairwise comparisons within DEET based
+on the overlap of the pathways enriched by the inputted gene list and
+the pathways enriched from the pairwise comparisons withing DEET. The
+format is the same as <code>AP_DEET_DE_output</code> where pathway gene
+ontology term names are in the place of DE gene names.</li>
+<li>AP_DEET_TF_output - Enriched pairwise comparisons within DEET based
+on the overlap of the transcription factors enriched by the inputted
+gene list and the pathways enriched from the pairwise comparisons
+withing DEET. The format is the same as <code>AP_DEET_DE_output</code>
+where pathway gene transcription factor term names are in the place of
+DE gene names.</li>
+<li>DE_correlations - A list containing three objects. The first
+objects, <code>results</code> is a data frame where the rows are
+different pairwise comparisons and the columns are the ouput of the
+correlational analysis between overlapping genes. Columns are the DEET
+ID and DEET name, the pearson/spearman’s correlation coefficients, as
+well as their raw and FDR adjusted p-values. The <code>metadata</code>
+object are the subsetted rows from the metadata data frame that align
+with the studies containing significant correlations. Lastly, the
+<code>distributions</code> object is a list where each element is a
+diffierent significantly associated pairwise comparisons. Each element
+is populated by a dataframe where rows are genes significant in at least
+one study, columns are the coefficients from the input study and DEET,
+and colour designates whether the gene is DE in one study (grey), both
+studies in the same direction (purple) and both studies in the opposite
+direction (orange).</li>
 </ul>
 </div>
 </div>
@@ -489,26 +710,53 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="inputs-1" class="section level4">
 <h4>Inputs</h4>
 <ul>
-<li><p>DEET_feature_extract expects three variables: a gene-by-comparison matrix populated with a statistic related to differential expresion (e.g., p-value, fold-change), a response variable (i.e., an output dependent variable), and a category.</p></li>
-<li><p>mat - a gene-bycomparison matrix populated with a statistic related to differential expression. The matrix in <code>DEET_data_download()</code> is populated with the log2FC of genes if they were deemed as significant (padj &lt; 0.05). Other matrices, namely those populated by p-value, fold-change, and t-statitic (including the matrices for all DEGs) can be found in <code>http://wilsonlab.org/public/DEET_data/feature_matrices</code> and can be downloaded separately.</p></li>
-<li><p>respeonse: a character vector identifying each study, this can be categorical, binomial (e.g. 0/1, T/F), or continuous</p></li>
-<li><p>datatype: a character indicating if the response is “binomial”, “categorical”, or “continuous”. This is case sensitive.</p></li>
+<li><p>DEET_feature_extract expects three variables: a
+gene-by-comparison matrix populated with a statistic related to
+differential expresion (e.g., p-value, fold-change), a response variable
+(i.e., an output dependent variable), and a category.</p></li>
+<li><p>mat - a gene-bycomparison matrix populated with a statistic
+related to differential expression. The matrix in
+<code>DEET_data_download()</code> is populated with the log2FC of genes
+if they were deemed as significant (padj &lt; 0.05). Other matrices,
+namely those populated by p-value, fold-change, and t-statitic
+(including the matrices for all DEGs) can be found in
+<code>http://wilsonlab.org/public/DEET_data/feature_matrices</code> and
+can be downloaded separately.</p></li>
+<li><p>respeonse: a character vector identifying each study, this can be
+categorical, binomial (e.g. 0/1, T/F), or continuous</p></li>
+<li><p>datatype: a character indicating if the response is “binomial”,
+“categorical”, or “continuous”. This is case sensitive.</p></li>
 </ul>
 </div>
 <div id="example" class="section level4">
 <h4>Example</h4>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">data</span>(DEET_feature_extract_example_matrix)</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="kw">data</span>(DEET_feature_extract_example_response)</a>
-<a class="sourceLine" id="cb8-3" title="3">single1 &lt;-<span class="st"> </span><span class="kw">DEET_feature_extract</span>(DEET_feature_extract_example_matrix,</a>
-<a class="sourceLine" id="cb8-4" title="4">DEET_feature_extract_example_response,<span class="st">&quot;categorical&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(DEET_feature_extract_example_matrix)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(DEET_feature_extract_example_response)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>single1 <span class="ot">&lt;-</span> <span class="fu">DEET_feature_extract</span>(DEET_feature_extract_example_matrix,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>DEET_feature_extract_example_response,<span class="st">&quot;categorical&quot;</span>)</span></code></pre></div>
 </div>
 <div id="outputs-1" class="section level4">
 <h4>Outputs</h4>
 <p>DEET feature extract outputs a list of three objects.</p>
 <ul>
-<li>elastic_net_coefficients - a named list where each element is a different option of the categorical or binomial variable. Each element is populated with a named vector where the name is a gene and the vector is the coefficient of an eleastic net regression. If the <code>datatype</code> is “continuous”, then this will just be a one-element list.</li>
-<li>elastic_net - The direct output of the glmnet elastic net. The parameters of <code>glmnet</code> are default aside from the <code>family</code>, which is determined by <code>datatype</code> and alpha which is set to 0.5 (selecting an elastic net instead of L1 or L2 regularized).</li>
-<li>basic_features - more basic statistical analysis to find genes associated with features. It is a list with “test”, a character vector stating “ANOVA”, “Wilcoxon”, or “correlation” depending on if the <code>datatype</code> input was categorical, binomial or continuous respsectively. The other object is a dataframe showing the significance of each gene, where rows are genes, and columns are stastistics (e.g., F-statistic for ANOVA), P-value, and FDR-adjusted p-value.</li>
+<li>elastic_net_coefficients - a named list where each element is a
+different option of the categorical or binomial variable. Each element
+is populated with a named vector where the name is a gene and the vector
+is the coefficient of an eleastic net regression. If the
+<code>datatype</code> is “continuous”, then this will just be a
+one-element list.</li>
+<li>elastic_net - The direct output of the glmnet elastic net. The
+parameters of <code>glmnet</code> are default aside from the
+<code>family</code>, which is determined by <code>datatype</code> and
+alpha which is set to 0.5 (selecting an elastic net instead of L1 or L2
+regularized).</li>
+<li>basic_features - more basic statistical analysis to find genes
+associated with features. It is a list with “test”, a character vector
+stating “ANOVA”, “Wilcoxon”, or “correlation” depending on if the
+<code>datatype</code> input was categorical, binomial or continuous
+respsectively. The other object is a dataframe showing the significance
+of each gene, where rows are genes, and columns are stastistics (e.g.,
+F-statistic for ANOVA), P-value, and FDR-adjusted p-value.</li>
 </ul>
 </div>
 </div>
@@ -516,124 +764,171 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h3>Plotting the outputs of DEET_enrich.</h3>
 <div id="barplots-of-enrichement" class="section level4">
 <h4>Barplots of enrichement</h4>
-<p>The <code>proccess_and_plot_DEET_enrich()</code> function is a wrapper that generates barplots and a dot plot of enrichment for all of the individual outputs of <code>DEET_enrich()</code> (not the correlations). The outputs are in ggplot2 objects, allowing users to further modify the plots or print however they like.</p>
+<p>The <code>proccess_and_plot_DEET_enrich()</code> function is a
+wrapper that generates barplots and a dot plot of enrichment for all of
+the individual outputs of <code>DEET_enrich()</code> (not the
+correlations). The outputs are in ggplot2 objects, allowing users to
+further modify the plots or print however they like.</p>
 </div>
 <div id="inputs-2" class="section level4">
 <h4>Inputs</h4>
 <ul>
-<li>DEET_output - The direct output of <code>DEET_enrich()</code> a named list with the ActivePathways enrichment from each data type. If there wasn’t enrichment of a certain datatype (e.g. AP_DEET_BP_output) the function runs properly but it is not plotted.</li>
+<li>DEET_output - The direct output of <code>DEET_enrich()</code> a
+named list with the ActivePathways enrichment from each data type. If
+there wasn’t enrichment of a certain datatype (e.g. AP_DEET_BP_output)
+the function runs properly but it is not plotted.</li>
 </ul>
-<p>The remaining varables are for graphical parameters that are passed into the <code>DEET_enrichment_plot()</code> function.</p>
+<p>The remaining varables are for graphical parameters that are passed
+into the <code>DEET_enrichment_plot()</code> function.</p>
 <ul>
 <li>width - The number of inches in the barplot or dotplot.</li>
 <li>text_angle - The angle of the enriched studies.</li>
-<li>horizontal - Whether the output barplot is vertical or horizontal</li>
+<li>horizontal - Whether the output barplot is vertical or
+horizontal</li>
 <li>topn - the top number of studies (by p-value) to be plotted.</li>
-<li>ol_size - the minimum number of overlapping genes (or paths) in an enriched study.</li>
-<li>exclude_domain - Exclude studies enriched based on DEGs, Paths, or TF if the user happened to aggregate the results into a single DF, generally unused.</li>
-<li>cluster_order - Factor to group studies based on the researchers custom annotation.</li>
-<li>colors - Type of color pallete to input into ‘scale_fill_brewer’ of ggplot.</li>
+<li>ol_size - the minimum number of overlapping genes (or paths) in an
+enriched study.</li>
+<li>exclude_domain - Exclude studies enriched based on DEGs, Paths, or
+TF if the user happened to aggregate the results into a single DF,
+generally unused.</li>
+<li>cluster_order - Factor to group studies based on the researchers
+custom annotation.</li>
+<li>colors - Type of color pallete to input into ‘scale_fill_brewer’ of
+ggplot.</li>
 </ul>
 </div>
 <div id="examples-1" class="section level4">
 <h4>Examples</h4>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">data</span>(<span class="st">&quot;example_DEET_enrich_input&quot;</span>)</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="kw">data</span>(<span class="st">&quot;DEET_example_data&quot;</span>)</a>
-<a class="sourceLine" id="cb9-3" title="3">DEET_out &lt;-<span class="st"> </span><span class="kw">DEET_enrich</span>(example_DEET_enrich_input, <span class="dt">DEET_dataset =</span> DEET_example_data)</a>
-<a class="sourceLine" id="cb9-4" title="4">plotting_example &lt;-<span class="st"> </span><span class="kw">proccess_and_plot_DEET_enrich</span>(DEET_out, <span class="dt">text_angle =</span> <span class="dv">45</span>,</a>
-<a class="sourceLine" id="cb9-5" title="5"><span class="dt">horizontal =</span> <span class="ot">TRUE</span>, <span class="dt">topn=</span><span class="dv">4</span>)</a></code></pre></div>
-<p>Another example Where <code>AP_DEET_BP_output</code> is not significant, to show the plotting function still works.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">data</span>(<span class="st">&quot;example_DEET_enrich_input&quot;</span>)</a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="kw">data</span>(<span class="st">&quot;DEET_example_data&quot;</span>)</a>
-<a class="sourceLine" id="cb10-3" title="3">DEET_out &lt;-<span class="st"> </span><span class="kw">DEET_enrich</span>(example_DEET_enrich_input, <span class="dt">DEET_dataset =</span> DEET_example_data)</a>
-<a class="sourceLine" id="cb10-4" title="4">DEET_out<span class="op">$</span>AP_DEET_DE_output &lt;-<span class="st"> &quot;No enrichment to be plotted&quot;</span></a>
-<a class="sourceLine" id="cb10-5" title="5">plotting_example &lt;-<span class="st"> </span><span class="kw">proccess_and_plot_DEET_enrich</span>(DEET_out, <span class="dt">text_angle =</span> <span class="dv">45</span>,</a>
-<a class="sourceLine" id="cb10-6" title="6"><span class="dt">horizontal =</span> <span class="ot">TRUE</span>, <span class="dt">topn=</span><span class="dv">4</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;example_DEET_enrich_input&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;DEET_example_data&quot;</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>DEET_out <span class="ot">&lt;-</span> <span class="fu">DEET_enrich</span>(example_DEET_enrich_input, <span class="at">DEET_dataset =</span> DEET_example_data)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>plotting_example <span class="ot">&lt;-</span> <span class="fu">proccess_and_plot_DEET_enrich</span>(DEET_out, <span class="at">text_angle =</span> <span class="dv">45</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="at">horizontal =</span> <span class="cn">TRUE</span>, <span class="at">topn=</span><span class="dv">4</span>)</span></code></pre></div>
+<p>Another example Where <code>AP_DEET_BP_output</code> is not
+significant, to show the plotting function still works.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;example_DEET_enrich_input&quot;</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;DEET_example_data&quot;</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>DEET_out <span class="ot">&lt;-</span> <span class="fu">DEET_enrich</span>(example_DEET_enrich_input, <span class="at">DEET_dataset =</span> DEET_example_data)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>DEET_out<span class="sc">$</span>AP_DEET_DE_output <span class="ot">&lt;-</span> <span class="st">&quot;No enrichment to be plotted&quot;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>plotting_example <span class="ot">&lt;-</span> <span class="fu">proccess_and_plot_DEET_enrich</span>(DEET_out, <span class="at">text_angle =</span> <span class="dv">45</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="at">horizontal =</span> <span class="cn">TRUE</span>, <span class="at">topn=</span><span class="dv">4</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="outputs-2" class="section level3">
 <h3>Outputs</h3>
-<p>There are up to four outputs assuming everything is significant, each output is a list or a ggplot object.</p>
+<p>There are up to four outputs assuming everything is significant, each
+output is a list or a ggplot object.</p>
 <ul>
-<li>DEET_Dotplot - an object of class ggplot priting the dotplot of enrichment from DEET using the DE, BP, and TF information.</li>
-<li>Pathway Barplot - An object of class ggplot printing the barplots of traditional pathway enrichment using ActivePathwys.</li>
-<li>individual_barplot - A list of ggplot2 objects showing the enrichment of every gene set (i.e., every enrichment output from <code>DEET_enrich()</code>).</li>
-<li>DEET_output_forplotting - A list of dataframes that are directly compatible with the <code>DEET_enrichment_plot</code>. An example of this is shown below.</li>
+<li>DEET_Dotplot - an object of class ggplot priting the dotplot of
+enrichment from DEET using the DE, BP, and TF information.</li>
+<li>Pathway Barplot - An object of class ggplot printing the barplots of
+traditional pathway enrichment using ActivePathwys.</li>
+<li>individual_barplot - A list of ggplot2 objects showing the
+enrichment of every gene set (i.e., every enrichment output from
+<code>DEET_enrich()</code>).</li>
+<li>DEET_output_forplotting - A list of dataframes that are directly
+compatible with the <code>DEET_enrichment_plot</code>. An example of
+this is shown below.</li>
 </ul>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">DE_example &lt;-<span class="st"> </span>DEET_out<span class="op">$</span>AP_DEET_DE_output<span class="op">$</span>results</a>
-<a class="sourceLine" id="cb11-2" title="2"></a>
-<a class="sourceLine" id="cb11-3" title="3"><span class="co"># Changes for DEET_example_plot</span></a>
-<a class="sourceLine" id="cb11-4" title="4">DE_example<span class="op">$</span>term.name &lt;-<span class="st"> </span>DEET_out<span class="op">$</span>AP_DEET_DE_output<span class="op">$</span>metadata<span class="op">$</span>DEET.Name</a>
-<a class="sourceLine" id="cb11-5" title="5">DE_example<span class="op">$</span>domain &lt;-<span class="st"> &quot;DE&quot;</span></a>
-<a class="sourceLine" id="cb11-6" title="6">DE_example<span class="op">$</span>overlap.size &lt;-<span class="st"> </span><span class="kw">lengths</span>(DE_example<span class="op">$</span>overlap)</a>
-<a class="sourceLine" id="cb11-7" title="7">DE_example<span class="op">$</span>p.value &lt;-<span class="st"> </span>DE_example<span class="op">$</span>adjusted.p.val</a>
-<a class="sourceLine" id="cb11-8" title="8"></a>
-<a class="sourceLine" id="cb11-9" title="9">DE_example_plot &lt;-<span class="st"> </span><span class="kw">DEET_enrichment_plot</span>(<span class="kw">list</span>(<span class="dt">DE_example =</span> DE_example), <span class="st">&quot;DE_example&quot;</span>)</a></code></pre></div>
-<p>As shown above, from here you can also just use <code>DEET_enrichment_plot</code> directly to have some more control over these plots.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>DE_example <span class="ot">&lt;-</span> DEET_out<span class="sc">$</span>AP_DEET_DE_output<span class="sc">$</span>results</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Changes for DEET_example_plot</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>DE_example<span class="sc">$</span>term.name <span class="ot">&lt;-</span> DEET_out<span class="sc">$</span>AP_DEET_DE_output<span class="sc">$</span>metadata<span class="sc">$</span>DEET.Name</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>DE_example<span class="sc">$</span>domain <span class="ot">&lt;-</span> <span class="st">&quot;DE&quot;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>DE_example<span class="sc">$</span>overlap.size <span class="ot">&lt;-</span> <span class="fu">lengths</span>(DE_example<span class="sc">$</span>overlap)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>DE_example<span class="sc">$</span>p.value <span class="ot">&lt;-</span> DE_example<span class="sc">$</span>adjusted.p.val</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>DE_example_plot <span class="ot">&lt;-</span> <span class="fu">DEET_enrichment_plot</span>(<span class="fu">list</span>(<span class="at">DE_example =</span> DE_example), <span class="st">&quot;DE_example&quot;</span>)</span></code></pre></div>
+<p>As shown above, from here you can also just use
+<code>DEET_enrichment_plot</code> directly to have some more control
+over these plots.</p>
 <div id="scatterplots-of-correlations-for-deet-enrichment" class="section level4">
 <h4>Scatterplots of correlations for DEET enrichment</h4>
-<p>This function also takes the direct output from <code>DEET_enrich</code> and generates scatterplots of the correlations of studies whose log2FCs are significantly correlated with the input DE list.</p>
+<p>This function also takes the direct output from
+<code>DEET_enrich</code> and generates scatterplots of the correlations
+of studies whose log2FCs are significantly correlated with the input DE
+list.</p>
 </div>
 <div id="input" class="section level4">
 <h4>Input</h4>
-<p>correlation_input - The <code>DE_correlations</code> object that is the output of the <code>DEET_enrich</code> function. It only works if there was at least one study that was significantly correlated.</p>
+<p>correlation_input - The <code>DE_correlations</code> object that is
+the output of the <code>DEET_enrich</code> function. It only works if
+there was at least one study that was significantly correlated.</p>
 </div>
 <div id="examples-2" class="section level4">
 <h4>Examples</h4>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">data</span>(<span class="st">&quot;example_DEET_enrich_input&quot;</span>)</a>
-<a class="sourceLine" id="cb12-2" title="2"><span class="kw">data</span>(<span class="st">&quot;DEET_example_data&quot;</span>)</a>
-<a class="sourceLine" id="cb12-3" title="3">DEET_out &lt;-<span class="st"> </span><span class="kw">DEET_enrich</span>(example_DEET_enrich_input, <span class="dt">DEET_dataset =</span> DEET_example_data)</a>
-<a class="sourceLine" id="cb12-4" title="4">correlation_input &lt;-<span class="st"> </span>DEET_out<span class="op">$</span>DE_correlations</a>
-<a class="sourceLine" id="cb12-5" title="5">correlation_plots &lt;-<span class="st"> </span><span class="kw">DEET_plot_correlation</span>(correlation_input)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;example_DEET_enrich_input&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;DEET_example_data&quot;</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>DEET_out <span class="ot">&lt;-</span> <span class="fu">DEET_enrich</span>(example_DEET_enrich_input, <span class="at">DEET_dataset =</span> DEET_example_data)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>correlation_input <span class="ot">&lt;-</span> DEET_out<span class="sc">$</span>DE_correlations</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>correlation_plots <span class="ot">&lt;-</span> <span class="fu">DEET_plot_correlation</span>(correlation_input)</span></code></pre></div>
 </div>
 <div id="outputs-3" class="section level4">
 <h4>Outputs</h4>
 <ul>
-<li>A list of ggplot objects showing the scatterplot between the coefs of the inputted DE list and the correlated study within DEET. The X axis shows the correlation coefficient, the Y axis shows the name of the enriched study, and the coloured points are genes that are DE in both studies.</li>
+<li>A list of ggplot objects showing the scatterplot between the coefs
+of the inputted DE list and the correlated study within DEET. The X axis
+shows the correlation coefficient, the Y axis shows the name of the
+enriched study, and the coloured points are genes that are DE in both
+studies.</li>
 </ul>
 </div>
 </div>
 <div id="using-deet-gene-lists-with-other-studies-and-enriching-two-input-lists-simultaneously." class="section level3">
-<h3>Using DEET gene lists with other studies and enriching two input lists simultaneously.</h3>
-<p>As mentioned previously, the genesets within DEET are easily transferrable to other gene set enrichment datasets.</p>
+<h3>Using DEET gene lists with other studies and enriching two input
+lists simultaneously.</h3>
+<p>As mentioned previously, the genesets within DEET are easily
+transferrable to other gene set enrichment datasets.</p>
 <div id="saving-deet-gene-set-for-gsea-gprofiler-etc." class="section level4">
 <h4>Saving DEET gene set for GSEA, gprofiler, etc.</h4>
-<p>One option is to download the *gmt files diretly from our ftp. <code>http://wilsonlab.org/public/DEET_data/DEET_DE.gmt</code> Is directly compatible with these tools.</p>
-<p>The other option would be to save the downloaded DEET gmt as a gmt file. This is completed using the ActivePathways R package. Instead of using the example data as shown below, please use the full dataset.</p>
-<p>Instead of saving to a temporary directory like in this vignette, save the file wherever you want the directory to be saved.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">DEET_gmt &lt;-<span class="st"> </span>DEET_example_data<span class="op">$</span>DEET_gmt_DE</a>
-<a class="sourceLine" id="cb13-2" title="2"><span class="kw">message</span>(<span class="kw">paste0</span>(<span class="st">&quot;DEET_gmt is an object of class gmt?: &quot;</span>,ActivePathways<span class="op">::</span><span class="kw">is.GMT</span>(DEET_gmt) ))</a>
-<a class="sourceLine" id="cb13-3" title="3"></a>
-<a class="sourceLine" id="cb13-4" title="4">ActivePathways<span class="op">::</span><span class="kw">write.GMT</span>(DEET_gmt, <span class="dt">file =</span> <span class="kw">paste0</span>(<span class="kw">tempdir</span>(),<span class="st">&quot;/DEET_DEs.gmt&quot;</span>))</a></code></pre></div>
+<p>One option is to download the *gmt files diretly from our ftp.
+<code>http://wilsonlab.org/public/DEET_data/DEET_DE.gmt</code> Is
+directly compatible with these tools.</p>
+<p>The other option would be to save the downloaded DEET gmt as a gmt
+file. This is completed using the ActivePathways R package. Instead of
+using the example data as shown below, please use the full dataset.</p>
+<p>Instead of saving to a temporary directory like in this vignette,
+save the file wherever you want the directory to be saved.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>DEET_gmt <span class="ot">&lt;-</span> DEET_example_data<span class="sc">$</span>DEET_gmt_DE</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="fu">paste0</span>(<span class="st">&quot;DEET_gmt is an object of class gmt?: &quot;</span>,ActivePathways<span class="sc">::</span><span class="fu">is.GMT</span>(DEET_gmt) ))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>ActivePathways<span class="sc">::</span><span class="fu">write.GMT</span>(DEET_gmt, <span class="at">file =</span> <span class="fu">paste0</span>(<span class="fu">tempdir</span>(),<span class="st">&quot;/DEET_DEs.gmt&quot;</span>))</span></code></pre></div>
 </div>
 <div id="enriching-two-gene-sets-simultaneously." class="section level4">
 <h4>Enriching two gene sets simultaneously.</h4>
-<p>If you have two dependent gene lists to input into DEET, you can use ActivePathways directly to find combind DEET-comparison enrichment of the two gene sets.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">set.seed</span>(<span class="dv">1234</span>) <span class="co"># as I sample p-values to make the toy example</span></a>
-<a class="sourceLine" id="cb14-2" title="2"></a>
-<a class="sourceLine" id="cb14-3" title="3"></a>
-<a class="sourceLine" id="cb14-4" title="4"></a>
-<a class="sourceLine" id="cb14-5" title="5"><span class="co"># For example two, I had the same genes but I shuffled the p-value </span></a>
-<a class="sourceLine" id="cb14-6" title="6"></a>
-<a class="sourceLine" id="cb14-7" title="7">example_DEET_enrich_input<span class="op">$</span>padj2 &lt;-<span class="st"> </span><span class="kw">sample</span>(example_DEET_enrich_input<span class="op">$</span>padj, <span class="kw">length</span>(example_DEET_enrich_input<span class="op">$</span>padj), <span class="dt">replace =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb14-8" title="8"></a>
-<a class="sourceLine" id="cb14-9" title="9"><span class="co"># Make a gene-by-input-list matrix of the adjusted p-values from your multiple gene sets</span></a>
-<a class="sourceLine" id="cb14-10" title="10"></a>
-<a class="sourceLine" id="cb14-11" title="11">AP_matrix &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(example_DEET_enrich_input[,<span class="kw">c</span>(<span class="st">&quot;padj&quot;</span>, <span class="st">&quot;padj2&quot;</span>)])</a>
-<a class="sourceLine" id="cb14-12" title="12"></a>
-<a class="sourceLine" id="cb14-13" title="13"><span class="co"># Run activepathways on the combined matrix.</span></a>
-<a class="sourceLine" id="cb14-14" title="14"></a>
-<a class="sourceLine" id="cb14-15" title="15"><span class="co"># Get gmt file, again from the whole list:</span></a>
-<a class="sourceLine" id="cb14-16" title="16"></a>
-<a class="sourceLine" id="cb14-17" title="17">DEET_gmt &lt;-<span class="st"> </span>DEET_example_data<span class="op">$</span>DEET_gmt_DE</a>
-<a class="sourceLine" id="cb14-18" title="18"></a>
-<a class="sourceLine" id="cb14-19" title="19"><span class="kw">head</span>(AP_matrix)</a>
-<a class="sourceLine" id="cb14-20" title="20"></a>
-<a class="sourceLine" id="cb14-21" title="21">AP_example_out &lt;-<span class="st"> </span>ActivePathways<span class="op">::</span><span class="kw">ActivePathways</span>(<span class="dt">scores=</span>AP_matrix, <span class="dt">gmt=</span>DEET_gmt, <span class="dt">geneset.filter =</span> <span class="kw">c</span>(<span class="dv">5</span>,<span class="dv">10000</span>),<span class="dt">correction.method =</span> <span class="st">&quot;fdr&quot;</span>)</a></code></pre></div>
+<p>If you have two dependent gene lists to input into DEET, you can use
+ActivePathways directly to find combind DEET-comparison enrichment of
+the two gene sets.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>) <span class="co"># as I sample p-values to make the toy example</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># For example two, I had the same genes but I shuffled the p-value </span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>example_DEET_enrich_input<span class="sc">$</span>padj2 <span class="ot">&lt;-</span> <span class="fu">sample</span>(example_DEET_enrich_input<span class="sc">$</span>padj, <span class="fu">length</span>(example_DEET_enrich_input<span class="sc">$</span>padj), <span class="at">replace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Make a gene-by-input-list matrix of the adjusted p-values from your multiple gene sets</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>AP_matrix <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(example_DEET_enrich_input[,<span class="fu">c</span>(<span class="st">&quot;padj&quot;</span>, <span class="st">&quot;padj2&quot;</span>)])</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Run activepathways on the combined matrix.</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Get gmt file, again from the whole list:</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>DEET_gmt <span class="ot">&lt;-</span> DEET_example_data<span class="sc">$</span>DEET_gmt_DE</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(AP_matrix)</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>AP_example_out <span class="ot">&lt;-</span> ActivePathways<span class="sc">::</span><span class="fu">ActivePathways</span>(<span class="at">scores=</span>AP_matrix, <span class="at">gmt=</span>DEET_gmt, <span class="at">geneset.filter =</span> <span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">10000</span>),<span class="at">correction.method =</span> <span class="st">&quot;fdr&quot;</span>)</span></code></pre></div>
 </div>
 <div id="outputs-4" class="section level4">
 <h4>Outputs</h4>
-<p>The outputs of using <code>ActivePathways</code> are the same as <code>DEET_enrich()</code> but with a couple extra columns. * evidence: Whether the DEET comparison is enriched because of one gene list, both gene lists, or an integrated version of these gene lists * Genes_<code>colname</code>: The genes that contributed to enrichment from each inputted gene list.</p>
+<p>The outputs of using <code>ActivePathways</code> are the same as
+<code>DEET_enrich()</code> but with a couple extra columns. * evidence:
+Whether the DEET comparison is enriched because of one gene list, both
+gene lists, or an integrated version of these gene lists *
+Genes_<code>colname</code>: The genes that contributed to enrichment
+from each inputted gene list.</p>
 </div>
 </div>
 </div>
