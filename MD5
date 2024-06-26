@@ -1,7 +1,7 @@
-ab6a9ef574acc1739fd6fcf1f94b43e4 *DESCRIPTION
+9b087c5f36a2ae2c0c4f519a3fcda855 *DESCRIPTION
 a6802c7b81513b1f3845b5ccfdd85238 *NAMESPACE
 57784e13a41ad885455a938ffcce17ec *R/DEET_Input_as_Reference.R
-a4da34544409e9a172d195d63e10f0b4 *R/DEET_data_download.R
+9d9efb4d3a6d2600ed3f4fb4da15a047 *R/DEET_data_download.R
 e014f82255db849211c3503b9669fbaa *R/DEET_enrich.R
 16e255bdf01d3c19c799a8251a4007cf *R/DEET_enrich_genesonly.R
 c4040ac47140545880a8dfd73e8576f2 *R/DEET_enrichment_plot.R
@@ -20,8 +20,8 @@ c64a037b89e694d8d48a9d7e218b0378 *data/DEET_example_data.rda
 982fb7b7aec2fad60d30395f3878f26d *data/DEET_feature_extract_example_response.rda
 91d8f778fe689a3f9c00130e96ce0aed *data/example_DEET_enrich_input.rda
 e35c34bae88c1674949e04202ef83231 *inst/doc/DEET_vignette.R
-0ff0dee399e307ca8cc9c78aa3065c99 *inst/doc/DEET_vignette.Rmd
-f46f728385a6992ddded7ec42866f91f *inst/doc/DEET_vignette.html
+cfdab8c7452d0d73f2fb8388ddb57f7c *inst/doc/DEET_vignette.Rmd
+04bcdace4fecec351d6962979202200f *inst/doc/DEET_vignette.html
 deb760d6b80e24b0b3e652603cf82d4e *man/DEET_Input_as_Reference.Rd
 7018d03cfff557b0fdc4ac3724327b36 *man/DEET_data_download.Rd
 abc1a23a22a1aa67cc372c838aef5903 *man/DEET_enrich.Rd
@@ -39,4 +39,4 @@ d2c0ccf97380224ae74e46398d4af58a *tests/testthat.R
 9ef93134ab287dc725089268cdc4a0f2 *tests/testthat/test_DEET_enrich.R
 558d9c00f9878c4f05aa9ffd24e30a11 *tests/testthat/test_DEET_feature_extract.R
 9c9944324287f204e9b86d11e7a8e591 *vignettes/DEET_V2.png
-0ff0dee399e307ca8cc9c78aa3065c99 *vignettes/DEET_vignette.Rmd
+cfdab8c7452d0d73f2fb8388ddb57f7c *vignettes/DEET_vignette.Rmd

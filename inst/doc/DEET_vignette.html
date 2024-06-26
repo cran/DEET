@@ -12,7 +12,7 @@
 
 <meta name="author" content="Dustin Sokolowski" />
 
-<meta name="date" content="2023-08-16" />
+<meta name="date" content="2024-06-25" />
 
 <title>Differential Expression Enrichment Tool (DEET)</title>
 
@@ -341,7 +341,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Differential Expression Enrichment Tool
 (DEET)</h1>
 <h4 class="author">Dustin Sokolowski</h4>
-<h4 class="date">2023-08-16</h4>
+<h4 class="date">2024-06-25</h4>
 
 
 <div id="TOC">
@@ -407,7 +407,7 @@ listed below.</p>
 <h2>Downloading files</h2>
 <p>All processed DEGs, metadata, and enriched pathways in formats
 compatible with this package as well as other methods such as gene set
-enrichment analysis are stored here: <a href="http://wilsonlab.org/public/DEET_data/" class="uri">http://wilsonlab.org/public/DEET_data/</a></p>
+enrichment analysis are stored here: <a href="https://www.wilsonlab.org/public/DEET_data/" class="uri">https://www.wilsonlab.org/public/DEET_data/</a></p>
 <p>No functions within DEET automatically load data for the user, so the
 data either needs to be downloaded directly from the ftp, or using the
 downloader function.</p>
@@ -478,10 +478,10 @@ comparison name (interpretable comparison name), and a gene set. In this
 case the gene-set is the DEGs that are enriched within that study.</li>
 <li>gmt_BP: A list of class GMT, which is a curated human gene ontology
 gene sets from the Bader Lab
-<code>http://download.baderlab.org/EM_Genesets/</code>.</li>
+<code>https://download.baderlab.org/EM_Genesets/</code>.</li>
 <li>gmt_TF: A list of class GMT, which is a curated human transcription
 factor gene sets from the Bader Lab
-<code>http://download.baderlab.org/EM_Genesets/</code>.</li>
+<code>https://download.baderlab.org/EM_Genesets/</code>.</li>
 <li>DEET_metadata: the same as the <code>metadata</code> dataframe (see
 above).</li>
 </ul>
@@ -720,8 +720,8 @@ related to differential expression. The matrix in
 if they were deemed as significant (padj &lt; 0.05). Other matrices,
 namely those populated by p-value, fold-change, and t-statitic
 (including the matrices for all DEGs) can be found in
-<code>http://wilsonlab.org/public/DEET_data/feature_matrices</code> and
-can be downloaded separately.</p></li>
+<code>https://www.wilsonlab.org/public/DEET_data/feature_matrices</code>
+and can be downloaded separately.</p></li>
 <li><p>respeonse: a character vector identifying each study, this can be
 categorical, binomial (e.g. 0/1, T/F), or continuous</p></li>
 <li><p>datatype: a character indicating if the response is “binomial”,
@@ -882,7 +882,7 @@ transferrable to other gene set enrichment datasets.</p>
 <div id="saving-deet-gene-set-for-gsea-gprofiler-etc." class="section level4">
 <h4>Saving DEET gene set for GSEA, gprofiler, etc.</h4>
 <p>One option is to download the *gmt files diretly from our ftp.
-<code>http://wilsonlab.org/public/DEET_data/DEET_DE.gmt</code> Is
+<code>https://www.wilsonlab.org/public/DEET_data/DEET_DE.gmt</code> Is
 directly compatible with these tools.</p>
 <p>The other option would be to save the downloaded DEET gmt as a gmt
 file. This is completed using the ActivePathways R package. Instead of
